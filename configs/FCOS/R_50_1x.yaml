@@ -1,0 +1,25 @@
+_BASE_: "Base-GFocal.yaml"
+MODEL:
+  WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
+  RESNETS:
+    DEPTH: 50
+  GFOCAL:
+    REG_DISCRETE: True
+    NMS_CRITERIA_TRAIN: "cls_n_ctr"
+    NMS_CRITERIA_TEST: "cls_n_ctr"
+    YIELD_PROPOSAL: True
+    DFL_WEIGHT: 0.0
+    CENTER_SAMPLE: False
+    POS_RADIUS: 1.5
+    UNIFY_CTRCLS: False
+INPUT:
+  MIN_SIZE_TRAIN: (800,)
+SOLVER:
+  AMP:
+    ENABLED: True
+OUTPUT_DIR: "output/gfocal/R_50_1x"
+SEMISUPNET:
+  Trainer: "baseline"
+TEST:
+  EVAL_PERIOD: 3000
+  EVALUATOR: "COCOeval"

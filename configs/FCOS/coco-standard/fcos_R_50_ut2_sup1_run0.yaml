@@ -1,0 +1,65 @@
+_BASE_: "../Base-FCOS.yaml"
+MODEL:
+  WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
+  RESNETS:
+    DEPTH: 50
+  FCOS:
+    CENTER_SAMPLE: False
+    NMS_CRITERIA_TRAIN: "cls" # use cls-only to select pseudo-labels
+    NMS_CRITERIA_TEST: "cls_n_ctr" # use cls + centerness score to select pseudo-labels
+    NMS_CRITERIA_REG_TRAIN: "cls_n_loc" # use cls + localization uncertainty to select pseudo-labels
+    POS_RADIUS: 1.5
+    YIELD_PROPOSAL: True
+    UNIFY_CTRCLS: False
+    DFL_WEIGHT: 0.0
+    REG_DISCRETE: True
+    KL_LOSS: True
+    KLLOSS_WEIGHT: 0.05
+    KL_LOSS_TYPE: "nlloss"
+INPUT:
+  MIN_SIZE_TRAIN: (800,)
+SOLVER:
+  IMG_PER_BATCH_LABEL: 8
+  IMG_PER_BATCH_UNLABEL: 8
+  BASE_LR: 0.01
+  STEPS: (180000,)
+  MAX_ITER: 180000
+  AMP:
+    ENABLED: True
+DATALOADER:
+  SUP_PERCENT: 1.0
+  RANDOM_DATA_SEED: 1
+DATASETS:
+  CROSS_DATASET: False
+  TRAIN: ("coco_2017_train",)
+  TEST: ("coco_2017_val",)
+SEMISUPNET:
+  Trainer: "ubteacher"
+  PSEUDO_BBOX_SAMPLE: "thresholding"
+  PSEUDO_BBOX_SAMPLE_REG: "thresholding" # 0.5 when PSEUDO_BBOX_SAMPLE_REG = 'thresholding'
+  BBOX_THRESHOLD: 0.5
+  BBOX_THRESHOLD_REG: 0.5 # 0.5 when PSEUDO_BBOX_SAMPLE_REG = 'thresholding'
+  BBOX_CTR_THRESHOLD: 0.0
+  BBOX_CTR_THRESHOLD_REG: 0.0
+  TEACHER_UPDATE_ITER: 1
+  BURN_UP_STEP: 10000
+  EMA_KEEP_RATE: 0.9999
+  UNSUP_LOSS_WEIGHT: 3.0
+  UNSUP_REG_LOSS_WEIGHT: 0.2
+  CONSIST_CTR_LOSS: "pseudo"
+  PSEUDO_CLS_IGNORE_NEAR: False
+  PSEUDO_CTR_THRES: 0.5
+  SOFT_CLS_LABEL: False
+  CLS_LOSS_METHOD: "focal"
+  CLS_LOSS_PSEUDO_METHOD: "focal"
+  TS_BETTER: 0.1
+  CONSIST_REG_LOSS: "ts_locvar_better_nms_nll_l1"
+  ANALYSIS_PRINT_FRE: 5000
+  ANALYSIS_ACCUMLATE_FRE: 50
+TEST:
+  EVAL_PERIOD: 2000
+  EVALUATOR: "COCOeval"
+  VAL_LOSS: False
+INPUT:
+  MIN_SIZE_TRAIN: (400, 1200)
+  MIN_SIZE_TRAIN_SAMPLING: "range"
