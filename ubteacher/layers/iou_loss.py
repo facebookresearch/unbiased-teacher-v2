@@ -1,4 +1,4 @@
-# This file is from AdelaiDet
+# Most part of this file is from AdelaiDet
 # https://github.com/aim-uofa/AdelaiDet
 
 
@@ -37,7 +37,8 @@ class IOULoss(nn.Module):
         target_right = target[:, 2]
         target_bottom = target[:, 3]
 
-        target_aera = (target_left + target_right) * (target_top + target_bottom)
+        target_aera = (target_left + target_right) * \
+            (target_top + target_bottom)
         pred_aera = (pred_left + pred_right) * (pred_top + pred_bottom)
 
         w_intersect = torch.min(pred_left, target_left) + torch.min(

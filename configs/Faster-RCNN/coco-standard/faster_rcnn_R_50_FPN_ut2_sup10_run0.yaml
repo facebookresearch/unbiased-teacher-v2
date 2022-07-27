@@ -42,6 +42,6 @@ TEST:
   EVAL_PERIOD: 2000
   EVALUATOR: "COCOeval"
   VAL_LOSS: False
-INPUT:
+INPUT: # scale jittering (follow soft teacher)
   MIN_SIZE_TRAIN: (400, 1200)
   MIN_SIZE_TRAIN_SAMPLING: "range"
